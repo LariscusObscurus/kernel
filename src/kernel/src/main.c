@@ -14,10 +14,12 @@
 
 #include "kprintf.h"
 #include "console.h"
+#include "gdt.h"
 
 void kmain(void)
 {
 	console_clear();
+	gdt_init();
 	int i = 0;
 	volatile int w = 0;
 	while(1) {
