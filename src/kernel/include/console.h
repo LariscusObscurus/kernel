@@ -38,7 +38,8 @@ void console_clear(void);
 void console_set_color(vga_color fg, vga_color bg);
 void console_putchar_at(char c, uint8_t color, uint8_t x, uint8_t y);
 void console_putchar(char c);
-void console_write_string(char* string);
+void console_write_string(const char* string);
 void console_scroll_up(void);
+void console_putnumber(uint32_t n, uint32_t base);
 
 #endif /* CONSOLE_H_ */

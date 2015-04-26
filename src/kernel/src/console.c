@@ -6,8 +6,6 @@
  */
 
 #include "console.h"
-#include "stdint.h"
-#include "stddef.h"
 
 static size_t console_row;
 static size_t console_column;
@@ -46,27 +44,45 @@ void console_clear(void)
 
 void console_putchar(char c)
 {
-	if(c == '\n') {
+	if (c == '\n') {
 		console_column = 0;
 		console_row++;
 		return;
 	}
 	console_putchar_at(c, console_color, console_column, console_row);
 	console_column++;
-	if(console_column == VGA_WIDTH) {
+	if (console_column == VGA_WIDTH) {
 		console_column = 0;
 		console_row++;
-		if(console_row == VGA_HEIGHT) {
+		if (console_row == VGA_HEIGHT) {
 			console_scroll_up();
 		}
 	}
 }
 
-void console_write_string(char* string)
+void console_write_string(const char* string)
 {
-	for (int i = 0; string[i] != 0; i++ ) {
-		console_putchar(string[i]);
+	while(*string) {
+		console_putchar(*string++);
 	}
+}
+
+void console_putnumber(uint32_t n, uint32_t base)
+{
+	char buffer[65];
+	const char* digits = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+	if (base > 36)
+		return;
+
+	char* p = buffer + 64;
+	*p = '\0';
+	do {
+		*--p = digits[n % base];
+		n /= base;
+	} while (n);
+	console_write_string(p);
+
 }
 
 void console_scroll_up(void)
