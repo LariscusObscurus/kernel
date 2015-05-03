@@ -61,7 +61,7 @@ isr_common:
 
 	push %esp
 	call tmp_isr
-	add $4, %esp
+	mov %eax, %esp
 
 	pop %eax
 	pop %ebx

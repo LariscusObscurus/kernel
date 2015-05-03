@@ -9,6 +9,7 @@
 #include "stdint.h"
 #include "idt.h"
 #include "kprintf.h"
+#include "scheduler.h"
 
 #define PIC1							0x20		//IO address master PIC
 #define PIC2							0xA0		//IO address slave PIC
@@ -155,20 +156,31 @@ void idt_init(void)
 	asm volatile("sti");
 }
 
-void tmp_isr(cpu_context_t* cpu)
+cpu_context_t* tmp_isr(cpu_context_t* ctx)
 {
-	if (cpu->interrupt_num <= 31) {
-		kprintf("Exception occurred; %x", cpu->interrupt_num);
+	cpu_context_t* ctx_new = ctx;
+
+	if (ctx->interrupt_num <= 31) {
+		kprintf("Exception occurred; %x", ctx->interrupt_num);
 		asm volatile("cli; hlt");
-	} else if (cpu->interrupt_num >= 32 && cpu->interrupt_num <= 47) {
-		if (cpu->interrupt_num >= 40) {
+
+	} else if (ctx->interrupt_num >= 32 && ctx->interrupt_num <= 47) {
+
+		if (ctx->interrupt_num == 32) {
+			ctx_new = schedule(ctx);
+		}
+
+		if (ctx->interrupt_num >= 40) {
 			outb(PIC2, PIC_EOI);
 		}
 		outb(PIC1, PIC_EOI);
-	} else if (cpu->interrupt_num == 48) {
-			kprintf("Syscall: %x\n", cpu->interrupt_num);
+
+	} else if (ctx->interrupt_num == 48) {
+			kprintf("Syscall: %x\n", ctx->interrupt_num);
+
 	} else {
-		kprintf("Unknown interrupt: %x", cpu->interrupt_num);
+		kprintf("Unknown interrupt: %x", ctx->interrupt_num);
 		asm volatile("cli; hlt");
 	}
+	return ctx_new;
 }
