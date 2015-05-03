@@ -12,7 +12,7 @@
 #include "stdint.h"
 
 #define VGA_WIDTH 80
-#define VGA_HEIGHT 24
+#define VGA_HEIGHT 25
 
 typedef enum {
 	COLOR_BLACK = 0,
@@ -31,11 +31,11 @@ typedef enum {
     COLOR_LIGHT_MAGENTA = 13,
     COLOR_LIGHT_BROWN = 14,
     COLOR_WHITE = 15,
-} vga_color;
+} vga_color_t;
 
-uint8_t combine_color(vga_color fg, vga_color bg);
+uint8_t combine_color(vga_color_t fg, vga_color_t bg);
 void console_clear(void);
-void console_set_color(vga_color fg, vga_color bg);
+void console_set_color(vga_color_t fg, vga_color_t bg);
 void console_putchar_at(char c, uint8_t color, uint8_t x, uint8_t y);
 void console_putchar(char c);
 void console_write_string(const char* string);

@@ -2,4 +2,8 @@ all: kernel
 
 kernel:
 	$(MAKE) -C src/kernel
-.PHONY: all
+
+clean:
+	$(MAKE) clean
+
+.PHONY: all kernel clean

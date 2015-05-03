@@ -6,18 +6,19 @@
  */
 
 #include "console.h"
+#include "string.h"
 
 static size_t console_row;
 static size_t console_column;
 static uint8_t console_color;
 static uint16_t* console_buffer;
 
-uint8_t combine_color(vga_color fg, vga_color bg)
+uint8_t combine_color(vga_color_t fg, vga_color_t bg)
 {
 	return fg | bg << 4;
 }
 
-void console_set_color(vga_color fg, vga_color bg)
+void console_set_color(vga_color_t fg, vga_color_t bg)
 {
 	console_color = combine_color(fg, bg);
 }
@@ -35,8 +36,8 @@ void console_clear(void)
 	console_buffer = (uint16_t*) 0xB8000;
 	console_set_color(COLOR_LIGHT_CYAN, COLOR_BLACK);
 
-	for (size_t y = 0; y < VGA_HEIGHT; ++y) {
-		for (size_t x = 0; x < VGA_WIDTH; ++x) {
+	for (size_t y = 0; y < VGA_HEIGHT; y++) {
+		for (size_t x = 0; x < VGA_WIDTH; x++) {
 			console_putchar_at(' ', console_color, x, y);
 		}
 	}
@@ -48,6 +49,9 @@ void console_putchar(char c)
 		console_column = 0;
 		console_row++;
 		return;
+	}
+	if (console_row == VGA_HEIGHT) {
+		console_scroll_up();
 	}
 	console_putchar_at(c, console_color, console_column, console_row);
 	console_column++;
@@ -87,17 +91,11 @@ void console_putnumber(uint32_t n, uint32_t base)
 
 void console_scroll_up(void)
 {
-	console_row = 0;
-	console_column = 0;
-	for (int i = 0; i < VGA_HEIGHT * VGA_WIDTH; ++i) {
-		console_putchar(console_buffer[i]);
-	}
+	//Copy lines up a line
+	memcpy(console_buffer, console_buffer + VGA_WIDTH, (VGA_HEIGHT-1) * VGA_WIDTH*2);
 
-	console_row = VGA_HEIGHT - 1;
-	for(int i = 0; i < VGA_WIDTH; ++i)
-	{
-		console_putchar(' ');
-	}
-	console_row--;
-    console_column = 0;
+	uint16_t space = (console_color << 8) | 0x20;
+	memsetw(console_buffer + (VGA_HEIGHT - 1) * VGA_WIDTH, space, VGA_WIDTH);
+	console_row = VGA_HEIGHT -1;
+	console_column = 0;
 }

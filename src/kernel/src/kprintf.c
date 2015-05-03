@@ -11,7 +11,7 @@
 void kprintf(const char* string, ...)
 {
 	va_list ap;
-	unsigned long n;
+	uint32_t n;
 	const char * s;
 	va_start(ap, string);
 

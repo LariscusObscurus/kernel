@@ -35,16 +35,16 @@ typedef struct __attribute__((packed)){
 	uint8_t access_info;
 	uint8_t segment_limit_high; //Also contains granularity, default operand size L and AVL flags
 	uint8_t base_address_high;
-} gdt_descriptor;
+} gdt_descriptor_t;
 
 typedef struct __attribute__((packed)) {
 	uint16_t limit;
 	void* pointer;
-} gdt_pointer;
+} gdt_pointer_t;
 
-static gdt_descriptor gdt[GDT_ENTRIES];
-static gdt_pointer gdtp = {
-		.limit = GDT_ENTRIES * 8 - 1,
+static gdt_descriptor_t gdt[GDT_ENTRIES];
+static gdt_pointer_t gdtp = {
+		.limit = GDT_ENTRIES * sizeof (gdt_descriptor_t) - 1,
 		.pointer = gdt
 };
 
