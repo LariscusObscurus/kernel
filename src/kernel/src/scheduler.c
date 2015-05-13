@@ -11,7 +11,7 @@ static int32_t task_current = -1;
 static uint32_t task_count = 0;
 static cpu_context_t** task_ctx;
 
-void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack_size)
+void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack_size, uint8_t* userspace_stack, size_t userspace_stack_size)
 {
 	task_ctx = tasks;
 	cpu_context_t ctx_new = {
@@ -24,7 +24,11 @@ void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack
 			.ebp = 0,
 
 			.eip = (uint32_t)task,
-			.cs = 0x08,
+			.esp = (uint32_t) userspace_stack + userspace_stack_size,
+
+			.cs = 0x18 | 0x03,
+			.ss = 0x20 | 0x03,
+
 			.eflags = 0x200
 	};
 

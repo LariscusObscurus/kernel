@@ -12,5 +12,6 @@
 
 void gdt_init(void);
 void gdt_set_descriptor(int i, uint32_t base, uint32_t limit, uint32_t accessflags, uint8_t flags);
+void tss_set_esp(uint32_t stack);
 
 #endif /* GDT_H_ */

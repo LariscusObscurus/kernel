@@ -10,6 +10,7 @@
 #include "idt.h"
 #include "kprintf.h"
 #include "scheduler.h"
+#include "gdt.h"
 
 #define PIC1							0x20		//IO address master PIC
 #define PIC2							0xA0		//IO address slave PIC
@@ -111,8 +112,8 @@ void init_pic(uint8_t offset_pic1, uint8_t offset_pic2)
 	outb(PIC2_DATA, ICW4_8086);
 
 	//Clear IMR to activate all IRQs
-	outb(PIC1_COMMAND, 0x0);
-	outb(PIC2_COMMAND, 0x0);
+	outb(PIC1_DATA, 0x0);
+	outb(PIC2_DATA, 0x0);
 }
 
 void idt_set_gate(int i, void (*handler)(), uint16_t segment, uint8_t flags)
@@ -168,6 +169,7 @@ cpu_context_t* tmp_isr(cpu_context_t* ctx)
 
 		if (ctx->interrupt_num == 32) {
 			ctx_new = schedule(ctx);
+			tss_set_esp((uint32_t)ctx_new + 1);
 		}
 
 		if (ctx->interrupt_num >= 40) {

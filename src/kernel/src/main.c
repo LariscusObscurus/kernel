@@ -22,11 +22,15 @@
 cpu_context_t* tasks[2];
 uint8_t task1_stack[4096];
 uint8_t task2_stack[4096];
+uint8_t task1_userspace_stack[4096];
+uint8_t task2_userspace_stack[4096];
 
 void task_print_task1(void)
 {
+	//asm volatile ("cli;hlt"); //Should cause general protection fault
 	while(true)
 		kprintf("Task1\n");
+
 }
 
 void task_print_task2(void)
@@ -41,19 +45,10 @@ void kmain(void)
 	gdt_init();
 	idt_init();
 
-	task_create(tasks, task_print_task1, task1_stack, sizeof task1_stack);
-	task_create(tasks, task_print_task2, task2_stack, sizeof task2_stack);
+	task_create(tasks, task_print_task1, task1_stack, sizeof task1_stack, task1_userspace_stack, sizeof task1_userspace_stack);
+	task_create(tasks, task_print_task2, task2_stack, sizeof task2_stack, task2_userspace_stack, sizeof task2_userspace_stack);
 
-	int i = 0;
-	volatile int w = 0;
-	while(1) {
-		kprintf("Hello, World! %d\n", i);
-		//kprintf("Hello, World! %x\n", i);
-		kprintf("Hello, World! %%\n");
-		//kprintf("Hello, World! %c\n", 'a');
-		while(++w < 90000){}
-		asm volatile ("int $0x30;");
-		w = 0;
-		i++;
+	while(true) {
+
 	}
 }

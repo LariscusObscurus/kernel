@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 INCPATH = include
 SRCPATH = src
 OBJPATH = obj
