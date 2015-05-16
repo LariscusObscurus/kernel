@@ -18,4 +18,9 @@ SECTIONS
     .bss ALIGN(4096) : {
         *(.bss)
     }
+    /*
+  	 * Marks the end of the kernel
+     */
+    end = .;
+    
 }

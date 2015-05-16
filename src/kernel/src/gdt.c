@@ -110,10 +110,10 @@ static void tss_create(uint32_t i, uint16_t ss0, uint32_t esp0)
 void gdt_init(void)
 {
 	gdt_set_descriptor(0, 0, 0, 0, 0);
-	gdt_set_descriptor(1, 0, 0xFFFFF, (P_FLAG | S_FLAG | CODE_RX), (GRANULARITY_4K | DB_FLAG_32BIT));
-	gdt_set_descriptor(2, 0, 0xFFFFF, (P_FLAG | S_FLAG | DATA_RW), (GRANULARITY_4K | DB_FLAG_32BIT));
-	gdt_set_descriptor(3, 0, 0xFFFFF, (P_FLAG | RING3 | S_FLAG | CODE_RX), (GRANULARITY_4K | DB_FLAG_32BIT));
-	gdt_set_descriptor(4, 0, 0xFFFFF, (P_FLAG | RING3 | S_FLAG | DATA_RW), (GRANULARITY_4K | DB_FLAG_32BIT));
+	gdt_set_descriptor(1, 0, 0xFFFFFFFF, (P_FLAG | S_FLAG | CODE_RX), (GRANULARITY_4K | DB_FLAG_32BIT));
+	gdt_set_descriptor(2, 0, 0xFFFFFFFF, (P_FLAG | S_FLAG | DATA_RW), (GRANULARITY_4K | DB_FLAG_32BIT));
+	gdt_set_descriptor(3, 0, 0xFFFFFFFF, (P_FLAG | RING3 | S_FLAG | CODE_RX), (GRANULARITY_4K | DB_FLAG_32BIT));
+	gdt_set_descriptor(4, 0, 0xFFFFFFFF, (P_FLAG | RING3 | S_FLAG | DATA_RW), (GRANULARITY_4K | DB_FLAG_32BIT));
 	tss_create(5, 0x10, 0x0);
 
 	asm volatile ("lgdt %0" : : "m" (gdtp));

@@ -18,6 +18,7 @@
 #include "gdt.h"
 #include "idt.h"
 #include "scheduler.h"
+#include "paging.h"
 
 cpu_context_t* tasks[2];
 uint8_t task1_stack[4096];
@@ -44,6 +45,7 @@ void kmain(void)
 	console_clear();
 	gdt_init();
 	idt_init();
+	paging_init();
 
 	task_create(tasks, task_print_task1, task1_stack, sizeof task1_stack, task1_userspace_stack, sizeof task1_userspace_stack);
 	task_create(tasks, task_print_task2, task2_stack, sizeof task2_stack, task2_userspace_stack, sizeof task2_userspace_stack);
