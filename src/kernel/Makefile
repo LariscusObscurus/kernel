@@ -15,7 +15,7 @@ CC = i686-elf-gcc
 LD = i686-elf-ld
 
 CFLAGS = -Wall -g -std=gnu11 -I$(INCPATH)
-LDFLAGS = -Tkernel.ld
+LDFLAGS = -Tkernel.ld -Map kernel.map
 
 $(ASMOBJ): $(ASMPATH)/%.o : $(SRCPATH)/%.S
 	@$(CC) -c $< -o $@ $(CFLAGS)

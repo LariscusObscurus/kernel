@@ -10,6 +10,12 @@
 #include "idt.h"
 #include "stdint.h"
 #include "stddef.h"
+#include "paging.h"
+
+typedef struct {
+	cpu_context_t * ctx;
+	page_directory_t * dir;
+} task_t;
 
 void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack_size, uint8_t* userspace_stack, size_t userspace_stack_size);
 cpu_context_t* schedule(cpu_context_t* ctx);

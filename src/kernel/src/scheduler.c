@@ -9,11 +9,11 @@
 
 static int32_t task_current = -1;
 static uint32_t task_count = 0;
-static cpu_context_t** task_ctx;
+static cpu_context_t** task_list;
 
 void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack_size, uint8_t* userspace_stack, size_t userspace_stack_size)
 {
-	task_ctx = tasks;
+	task_list = tasks;
 	cpu_context_t ctx_new = {
 			.eax = 0,
 			.ebx = 0,
@@ -32,21 +32,21 @@ void task_create(cpu_context_t** tasks, void* task, uint8_t* stack, size_t stack
 			.eflags = 0x200
 	};
 
-	cpu_context_t* ctx =(void*) (stack + stack_size - sizeof ctx_new);
+	cpu_context_t* ctx =(void*) (stack + stack_size - sizeof (cpu_context_t));
 	*ctx = ctx_new;
-	task_ctx[task_count++] = ctx;
+	task_list[task_count++] = ctx;
 }
 
 cpu_context_t* schedule(cpu_context_t* ctx)
 {
 	if (task_current >= 0) {
-		task_ctx[task_current] = ctx;
+		task_list[task_current] = ctx;
 	}
 
 	task_current++;
 	task_current %= task_count;
 
-	ctx = task_ctx[task_current];
+	ctx = task_list[task_current];
 
 	return ctx;
 }

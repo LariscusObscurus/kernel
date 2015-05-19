@@ -20,9 +20,12 @@
 #include "scheduler.h"
 #include "paging.h"
 
+#define STACK_SIZE  (64*1024)
+__attribute__((aligned(16))) uint32_t kernel_stack[STACK_SIZE / sizeof (uint32_t)];
+
 cpu_context_t* tasks[2];
-uint8_t task1_stack[4096];
-uint8_t task2_stack[4096];
+uint8_t task1_stack[500];
+uint8_t task2_stack[500];
 uint8_t task1_userspace_stack[4096];
 uint8_t task2_userspace_stack[4096];
 
@@ -44,6 +47,7 @@ void kmain(void)
 {
 	console_clear();
 	gdt_init();
+	//tss_set_esp((uint32_t)kernel_stack + STACK_SIZE);
 	idt_init();
 	paging_init();
 

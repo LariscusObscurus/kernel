@@ -169,7 +169,7 @@ cpu_context_t* tmp_isr(cpu_context_t* ctx)
 
 		if (ctx->interrupt_num == 32) {
 			ctx_new = schedule(ctx);
-			tss_set_esp((uint32_t)ctx_new + 1);
+			tss_set_esp((uint32_t)ctx_new + sizeof(cpu_context_t));
 		}
 
 		if (ctx->interrupt_num >= 40) {

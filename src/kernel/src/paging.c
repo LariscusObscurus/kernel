@@ -8,6 +8,8 @@
 #include "string.h"
 #include "kmalloc.h"
 #include "console.h"
+#include "panic.h"
+#include "logger.h"
 
 extern uint32_t placement_address;
 
@@ -68,18 +70,20 @@ static uint32_t find_first_frame(void)
 void allocate_frame(page_t *page, bool kernel_space, bool writeable)
 {
 	if (page->frame != 0) {
+		page->present = 1;
+		page->rw = (writeable)?1:0;
+		page->user = (kernel_space)?0:1;
 		return;
 	} else {
 		uint32_t index = find_first_frame();
 		if (index == (uint32_t)-1) {
-			//TODO: PANIC
-			console_write_string("No free frames");
+		    PANIC("No free frames");
 		}
 		set_frame(index * 0x1000);
+		page->frame = index;
 		page->present = 1;
 		page->rw = (writeable)?1:0;
 		page->user = (kernel_space)?0:1;
-		page->frame = index;
 	}
 }
 
@@ -94,6 +98,17 @@ void free_frame(page_t *page)
 	}
 }
 
+void map_dma_frame(page_t *page, bool kernel_space, bool writeable, uint32_t address)
+{
+    page->present = 1;
+    page->rw = (writeable)?1:0;
+    page->user = (kernel_space)?0:1;
+    page->frame = address / 0x1000;
+    if (address * 4 * 0x400) {
+        set_frame(address);
+    }
+}
+
 void paging_init(void)
 {
 	uint32_t mem_end_page = 0x1000000;
@@ -105,10 +120,23 @@ void paging_init(void)
 	memset(kernel_directory, 0, sizeof (page_directory_t));
 	current_directory = kernel_directory;
 
-	uint32_t i = 0;
+	//Null pointer should not be mapped
+	get_page(0, true, kernel_directory)->present = 0;
+	set_frame(0);
+
+	for (uint32_t i = 0x1000; i < 0x100000; i += 0x1000) {
+	    map_dma_frame(get_page(i, true, kernel_directory), 1, 0, i);
+	}
+
+	uint32_t i = 0x100000;
 	while (i < placement_address) {
 		allocate_frame( get_page(i, true, kernel_directory), 0, 1);
 		i += 0x1000;
+	}
+
+	//remap VGA text mode address space
+	for (uint32_t i = 0xB8000; i < 0xC0000; i += 0x1000) {
+	    map_dma_frame(get_page(i, true, kernel_directory), 0, 1, i);
 	}
 	//TODO: Page fault handler
 	switch_page_directory(kernel_directory);

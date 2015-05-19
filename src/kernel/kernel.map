@@ -1,0 +1,306 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+task1_userspace_stack
+                    0x1000            obj/main.o
+tasks               0x8               obj/main.o
+task2_stack         0x1f4             obj/main.o
+nframes             0x4               obj/paging.o
+current_directory   0x4               obj/paging.o
+kernel_directory    0x4               obj/paging.o
+task1_stack         0x1f4             obj/main.o
+task2_userspace_stack
+                    0x1000            obj/main.o
+frames              0x4               obj/paging.o
+kernel_stack        0x10000           obj/main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0x0000000000100000                . = 0x100000
+
+.text           0x0000000000100000     0x151b
+ *(multiboot)
+ multiboot      0x0000000000100000        0xc obj/asm/start.o
+ *(.text)
+ .text          0x000000000010000c      0x16e obj/kprintf.o
+                0x000000000010000c                kprintf
+ .text          0x000000000010017a      0x1b4 obj/string.o
+                0x000000000010017a                memcmp
+                0x00000000001001ea                memcpy
+                0x000000000010022b                memmove
+                0x000000000010029d                memset
+                0x00000000001002d0                memsetw
+                0x0000000000100307                strlen
+ .text          0x000000000010032e      0x130 obj/scheduler.o
+                0x000000000010032e                task_create
+                0x00000000001003fd                schedule
+ .text          0x000000000010045e       0x41 obj/logger.o
+                0x000000000010045e                debug_print
+ .text          0x000000000010049f      0x2ad obj/console.o
+                0x000000000010049f                combine_color
+                0x00000000001004b1                console_set_color
+                0x00000000001004c9                console_putchar_at
+                0x0000000000100528                console_clear
+                0x00000000001005a3                console_putchar
+                0x000000000010064a                console_write_string
+                0x0000000000100679                console_putnumber
+                0x00000000001006db                console_scroll_up
+ .text          0x000000000010074c      0x5d3 obj/paging.o
+                0x00000000001008c9                allocate_frame
+                0x00000000001009e7                free_frame
+                0x0000000000100a1a                map_dma_frame
+                0x0000000000100ab4                paging_init
+                0x0000000000100c35                switch_page_directory
+                0x0000000000100c63                get_page
+ .text          0x0000000000100d1f       0x9e obj/main.o
+                0x0000000000100d1f                task_print_task1
+                0x0000000000100d37                task_print_task2
+                0x0000000000100d4f                kmain
+ .text          0x0000000000100dbd       0xbe obj/kmalloc.o
+                0x0000000000100e29                kmalloc_aligned
+                0x0000000000100e3d                kmalloc_physical
+                0x0000000000100e52                kmalloc_aligned_physical
+                0x0000000000100e67                kmalloc
+ .text          0x0000000000100e7b      0x401 obj/idt.o
+                0x0000000000100e99                init_pic
+                0x0000000000100f3a                idt_set_gate
+                0x0000000000100f96                idt_init
+                0x0000000000101193                tmp_isr
+ .text          0x000000000010127c      0x1f1 obj/gdt.o
+                0x000000000010127c                gdt_set_descriptor
+                0x00000000001013b6                gdt_init
+                0x0000000000101460                tss_set_esp
+ .text          0x000000000010146d        0xe obj/asm/start.o
+                0x000000000010146d                _start
+ .text          0x000000000010147b       0xa0 obj/asm/isr.o
+                0x000000000010147b                isr0
+                0x0000000000101481                isr1
+                0x0000000000101487                isr2
+                0x000000000010148d                isr3
+                0x0000000000101493                isr4
+                0x0000000000101499                isr5
+                0x000000000010149f                isr6
+                0x00000000001014a5                isr7
+                0x00000000001014ab                isr8
+                0x00000000001014af                isr9
+                0x00000000001014b5                isr10
+                0x00000000001014b9                isr11
+                0x00000000001014bd                isr12
+                0x00000000001014c1                isr13
+                0x00000000001014c5                isr14
+                0x00000000001014c9                isr15
+                0x00000000001014cf                isr16
+                0x00000000001014d5                isr17
+                0x00000000001014d9                isr18
+                0x00000000001014df                isr32
+                0x00000000001014e5                isr33
+                0x00000000001014eb                isr48
+
+.iplt           0x0000000000101520        0x0
+ .iplt          0x0000000000101520        0x0 obj/kprintf.o
+
+.data           0x0000000000102000       0x2c
+ *(.data)
+ .data          0x0000000000102000        0x0 obj/kprintf.o
+ .data          0x0000000000102000        0x0 obj/string.o
+ .data          0x0000000000102000        0x4 obj/scheduler.o
+ .data          0x0000000000102004       0x18 obj/logger.o
+ .data          0x000000000010201c        0x0 obj/console.o
+ .data          0x000000000010201c        0x0 obj/paging.o
+ .data          0x000000000010201c        0x0 obj/main.o
+ .data          0x000000000010201c        0x4 obj/kmalloc.o
+                0x000000000010201c                placement_address
+ .data          0x0000000000102020        0x6 obj/idt.o
+ .data          0x0000000000102026        0x6 obj/gdt.o
+ .data          0x000000000010202c        0x0 obj/asm/start.o
+ .data          0x000000000010202c        0x0 obj/asm/isr.o
+
+.igot.plt       0x000000000010202c        0x0
+ .igot.plt      0x000000000010202c        0x0 obj/kprintf.o
+
+.rodata         0x0000000000103000       0xc9
+ *(.rodata)
+ .rodata        0x0000000000103000        0x3 obj/kprintf.o
+ .rodata        0x0000000000103003       0x3c obj/logger.o
+ *fill*         0x000000000010303f        0x1 
+ .rodata        0x0000000000103040       0x25 obj/console.o
+ .rodata        0x0000000000103065       0x1c obj/paging.o
+ .rodata        0x0000000000103081        0xe obj/main.o
+ .rodata        0x000000000010308f       0x3a obj/idt.o
+
+.eh_frame       0x00000000001030cc      0x5cc
+ .eh_frame      0x00000000001030cc       0x38 obj/kprintf.o
+ .eh_frame      0x0000000000103104       0xc0 obj/string.o
+                                         0xd8 (size before relaxing)
+ .eh_frame      0x00000000001031c4       0x44 obj/scheduler.o
+                                         0x5c (size before relaxing)
+ .eh_frame      0x0000000000103208       0x20 obj/logger.o
+                                         0x38 (size before relaxing)
+ .eh_frame      0x0000000000103228      0x108 obj/console.o
+                                        0x120 (size before relaxing)
+ .eh_frame      0x0000000000103330      0x154 obj/paging.o
+                                        0x16c (size before relaxing)
+ .eh_frame      0x0000000000103484       0x54 obj/main.o
+                                         0x6c (size before relaxing)
+ .eh_frame      0x00000000001034d8       0xa0 obj/kmalloc.o
+                                         0xb8 (size before relaxing)
+ .eh_frame      0x0000000000103578       0xa0 obj/idt.o
+                                         0xb8 (size before relaxing)
+ .eh_frame      0x0000000000103618       0x80 obj/gdt.o
+                                         0x98 (size before relaxing)
+
+.rel.dyn        0x0000000000103698        0x0
+ .rel.iplt      0x0000000000103698        0x0 obj/kprintf.o
+ .rel.text      0x0000000000103698        0x0 obj/kprintf.o
+ .rel.data      0x0000000000103698        0x0 obj/kprintf.o
+
+.bss            0x0000000000104000    0x14d40
+ *(.bss)
+ .bss           0x0000000000104000        0x0 obj/kprintf.o
+ .bss           0x0000000000104000        0x0 obj/string.o
+ .bss           0x0000000000104000        0x8 obj/scheduler.o
+ .bss           0x0000000000104008        0x0 obj/logger.o
+ .bss           0x0000000000104008       0x10 obj/console.o
+ .bss           0x0000000000104018        0x0 obj/paging.o
+ .bss           0x0000000000104018        0x0 obj/main.o
+ .bss           0x0000000000104018        0x0 obj/kmalloc.o
+ *fill*         0x0000000000104018       0x28 
+ .bss           0x0000000000104040      0x800 obj/idt.o
+ .bss           0x0000000000104840       0xb0 obj/gdt.o
+ .bss           0x00000000001048f0     0x2000 obj/asm/start.o
+ .bss           0x00000000001068f0        0x0 obj/asm/isr.o
+ COMMON         0x00000000001068f0       0x10 obj/paging.o
+                0x00000000001068f0                nframes
+                0x00000000001068f4                current_directory
+                0x00000000001068f8                kernel_directory
+                0x00000000001068fc                frames
+ COMMON         0x0000000000106900    0x12440 obj/main.o
+                0x0000000000106900                task1_userspace_stack
+                0x0000000000107900                tasks
+                0x0000000000107940                task2_stack
+                0x0000000000107b40                task1_stack
+                0x0000000000107d40                task2_userspace_stack
+                0x0000000000108d40                kernel_stack
+                0x0000000000118d40                end = .
+LOAD obj/kprintf.o
+LOAD obj/string.o
+LOAD obj/scheduler.o
+LOAD obj/logger.o
+LOAD obj/console.o
+LOAD obj/paging.o
+LOAD obj/main.o
+LOAD obj/kmalloc.o
+LOAD obj/idt.o
+LOAD obj/gdt.o
+LOAD obj/asm/start.o
+LOAD obj/asm/isr.o
+OUTPUT(kernel elf32-i386)
+
+.debug_info     0x0000000000000000     0x1b75
+ .debug_info    0x0000000000000000       0xec obj/kprintf.o
+ .debug_info    0x00000000000000ec      0x344 obj/string.o
+ .debug_info    0x0000000000000430      0x248 obj/scheduler.o
+ .debug_info    0x0000000000000678      0x144 obj/logger.o
+ .debug_info    0x00000000000007bc      0x33d obj/console.o
+ .debug_info    0x0000000000000af9      0x53d obj/paging.o
+ .debug_info    0x0000000000001036      0x225 obj/main.o
+ .debug_info    0x000000000000125b      0x1a0 obj/kmalloc.o
+ .debug_info    0x00000000000013fb      0x316 obj/idt.o
+ .debug_info    0x0000000000001711      0x39c obj/gdt.o
+ .debug_info    0x0000000000001aad       0x65 obj/asm/start.o
+ .debug_info    0x0000000000001b12       0x63 obj/asm/isr.o
+
+.debug_abbrev   0x0000000000000000      0x982
+ .debug_abbrev  0x0000000000000000       0x9c obj/kprintf.o
+ .debug_abbrev  0x000000000000009c       0xb0 obj/string.o
+ .debug_abbrev  0x000000000000014c       0xe4 obj/scheduler.o
+ .debug_abbrev  0x0000000000000230       0xb6 obj/logger.o
+ .debug_abbrev  0x00000000000002e6      0x104 obj/console.o
+ .debug_abbrev  0x00000000000003ea      0x1be obj/paging.o
+ .debug_abbrev  0x00000000000005a8       0xaf obj/main.o
+ .debug_abbrev  0x0000000000000657       0xb6 obj/kmalloc.o
+ .debug_abbrev  0x000000000000070d      0x14c obj/idt.o
+ .debug_abbrev  0x0000000000000859      0x101 obj/gdt.o
+ .debug_abbrev  0x000000000000095a       0x14 obj/asm/start.o
+ .debug_abbrev  0x000000000000096e       0x14 obj/asm/isr.o
+
+.debug_aranges  0x0000000000000000      0x180
+ .debug_aranges
+                0x0000000000000000       0x20 obj/kprintf.o
+ .debug_aranges
+                0x0000000000000020       0x20 obj/string.o
+ .debug_aranges
+                0x0000000000000040       0x20 obj/scheduler.o
+ .debug_aranges
+                0x0000000000000060       0x20 obj/logger.o
+ .debug_aranges
+                0x0000000000000080       0x20 obj/console.o
+ .debug_aranges
+                0x00000000000000a0       0x20 obj/paging.o
+ .debug_aranges
+                0x00000000000000c0       0x20 obj/main.o
+ .debug_aranges
+                0x00000000000000e0       0x20 obj/kmalloc.o
+ .debug_aranges
+                0x0000000000000100       0x20 obj/idt.o
+ .debug_aranges
+                0x0000000000000120       0x20 obj/gdt.o
+ .debug_aranges
+                0x0000000000000140       0x20 obj/asm/start.o
+ .debug_aranges
+                0x0000000000000160       0x20 obj/asm/isr.o
+
+.debug_line     0x0000000000000000      0x76f
+ .debug_line    0x0000000000000000       0x85 obj/kprintf.o
+ .debug_line    0x0000000000000085       0xea obj/string.o
+ .debug_line    0x000000000000016f       0x8c obj/scheduler.o
+ .debug_line    0x00000000000001fb       0x62 obj/logger.o
+ .debug_line    0x000000000000025d       0xd7 obj/console.o
+ .debug_line    0x0000000000000334      0x171 obj/paging.o
+ .debug_line    0x00000000000004a5       0x74 obj/main.o
+ .debug_line    0x0000000000000519       0x6d obj/kmalloc.o
+ .debug_line    0x0000000000000586       0xc2 obj/idt.o
+ .debug_line    0x0000000000000648       0x81 obj/gdt.o
+ .debug_line    0x00000000000006c9       0x3f obj/asm/start.o
+ .debug_line    0x0000000000000708       0x67 obj/asm/isr.o
+
+.debug_str      0x0000000000000000      0x8b7
+ .debug_str     0x0000000000000000       0xef obj/kprintf.o
+                                        0x12e (size before relaxing)
+ .debug_str     0x00000000000000ef       0x8c obj/string.o
+                                        0x18e (size before relaxing)
+ .debug_str     0x000000000000017b       0xa6 obj/scheduler.o
+                                        0x1d0 (size before relaxing)
+ .debug_str     0x0000000000000221       0x72 obj/logger.o
+                                        0x172 (size before relaxing)
+ .debug_str     0x0000000000000293      0x1cc obj/console.o
+                                        0x309 (size before relaxing)
+ .debug_str     0x000000000000045f      0x18d obj/paging.o
+                                        0x2d8 (size before relaxing)
+ .debug_str     0x00000000000005ec       0x84 obj/main.o
+                                        0x1c0 (size before relaxing)
+ .debug_str     0x0000000000000670       0x67 obj/kmalloc.o
+                                        0x175 (size before relaxing)
+ .debug_str     0x00000000000006d7       0xc0 obj/idt.o
+                                        0x21a (size before relaxing)
+ .debug_str     0x0000000000000797      0x120 obj/gdt.o
+                                        0x257 (size before relaxing)
+
+.comment        0x0000000000000000       0x11
+ .comment       0x0000000000000000       0x11 obj/kprintf.o
+                                         0x12 (size before relaxing)
+ .comment       0x0000000000000011       0x12 obj/string.o
+ .comment       0x0000000000000011       0x12 obj/scheduler.o
+ .comment       0x0000000000000011       0x12 obj/logger.o
+ .comment       0x0000000000000011       0x12 obj/console.o
+ .comment       0x0000000000000011       0x12 obj/paging.o
+ .comment       0x0000000000000011       0x12 obj/main.o
+ .comment       0x0000000000000011       0x12 obj/kmalloc.o
+ .comment       0x0000000000000011       0x12 obj/idt.o
+ .comment       0x0000000000000011       0x12 obj/gdt.o
